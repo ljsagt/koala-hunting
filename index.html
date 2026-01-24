@@ -1,0 +1,1574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Koala Hunting - PM Edition</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+        }
+        #gameContainer {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        /* Modern Office Background */
+        #office {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%);
+            overflow: hidden;
+        }
+
+        /* Ceiling */
+        #ceiling {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 50px;
+            background: #f1f5f9;
+            border-bottom: 3px solid #cbd5e1;
+        }
+        .ceiling-light {
+            position: absolute;
+            top: 12px;
+            width: 120px;
+            height: 25px;
+            background: linear-gradient(180deg, #fff 0%, #f0f9ff 100%);
+            border-radius: 5px;
+            box-shadow: 0 0 20px rgba(255,255,255,0.8);
+        }
+
+        /* Window with green view */
+        .window {
+            position: absolute;
+            width: 120px;
+            height: 150px;
+            background: linear-gradient(180deg, #87ceeb 0%, #98d8aa 30%, #4ade80 100%);
+            border: 6px solid #94a3b8;
+            border-radius: 3px;
+            box-shadow: inset 0 0 20px rgba(255,255,255,0.5);
+        }
+        .window::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: 3px;
+            height: 100%;
+            background: #94a3b8;
+            transform: translateX(-50%);
+        }
+
+        /* Floor */
+        #floor {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 80px;
+            background: linear-gradient(90deg, #d4a574 0%, #c9956c 50%, #d4a574 100%);
+        }
+
+        /* PM Area - LEFT side, large */
+        #pmArea {
+            position: absolute;
+            top: 60px;
+            left: 20px;
+            width: 320px;
+            height: 440px;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            border: 4px solid #0891b2;
+            border-radius: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 15px;
+            z-index: 20;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+        #pmArea::before {
+            content: "PM's OFFICE";
+            position: absolute;
+            top: -15px;
+            background: linear-gradient(135deg, #0891b2, #0e7490);
+            color: white;
+            padding: 5px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 14px;
+            box-shadow: 0 3px 10px rgba(8, 145, 178, 0.3);
+        }
+        #pmCharacter {
+            position: relative;
+            width: 280px;
+            height: 340px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding-top: 10px;
+        }
+        #pmImage {
+            width: 240px;
+            height: 240px;
+            object-fit: contain;
+            position: relative;
+            z-index: 1;
+            margin-top: 60px;
+        }
+        #pmHair {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            width: 120px;
+            z-index: 2;
+        }
+        .hair-strand {
+            font-size: 12px;
+            transition: all 0.3s;
+        }
+        #pmCharacter #hairCount {
+            position: absolute;
+            top: 55px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 3;
+            white-space: nowrap;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 2px 10px;
+            border-radius: 8px;
+        }
+        #pmInfo {
+            text-align: center;
+            margin-top: 10px;
+        }
+        #hairCount {
+            font-size: 28px;
+            color: #0891b2;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+        #pmStatus {
+            color: #475569;
+            font-size: 24px;
+            margin-top: 8px;
+            min-height: 40px;
+            font-weight: 600;
+            max-width: 300px;
+            line-height: 1.2;
+        }
+
+        /* Desk Area */
+        #deskArea {
+            position: absolute;
+            top: 60px;
+            left: 360px;
+            right: 20px;
+            bottom: 100px;
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+            gap: 12px;
+            padding: 15px;
+        }
+
+        /* Individual Cubicle Desk */
+        .desk {
+            position: relative;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.1);
+            min-height: 100px;
+            overflow: visible;
+        }
+        /* Teal divider */
+        .desk::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 20px;
+            background: linear-gradient(180deg, #0891b2 0%, #06b6d4 100%);
+            border-radius: 8px 8px 0 0;
+        }
+        /* Monitor - 2x size */
+        .monitor {
+            position: absolute;
+            top: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 44px;
+            background: #1e293b;
+            border-radius: 4px;
+            border: 4px solid #334155;
+        }
+        .monitor::after {
+            content: '';
+            position: absolute;
+            bottom: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 12px;
+            height: 12px;
+            background: #64748b;
+        }
+        /* Red chair */
+        .chair {
+            position: absolute;
+            bottom: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 22px;
+            height: 12px;
+            background: #dc2626;
+            border-radius: 3px;
+        }
+        /* Desk items - 2x size */
+        .desk-item {
+            position: absolute;
+            font-size: 28px;
+        }
+        .desk-label {
+            position: absolute;
+            bottom: -16px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 8px;
+            color: #64748b;
+        }
+
+        /* Koala - 1.5x bigger */
+        .koala {
+            position: absolute;
+            width: 82px;
+            height: 82px;
+            cursor: pointer;
+            transition: transform 0.1s;
+            z-index: 30;
+            pointer-events: auto;
+        }
+        .koala:hover {
+            transform: scale(1.15);
+        }
+        .koala:active {
+            transform: scale(0.9);
+        }
+        .koala-status {
+            position: absolute;
+            top: -24px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 16px;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 10px;
+            white-space: nowrap;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+
+        /* UI Panel */
+        #ui {
+            position: absolute;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(15, 23, 42, 0.9);
+            padding: 12px 35px;
+            border-radius: 12px;
+            color: white;
+            display: flex;
+            gap: 35px;
+            align-items: center;
+            z-index: 50;
+        }
+        .ui-item {
+            text-align: center;
+        }
+        .ui-label {
+            font-size: 10px;
+            color: #94a3b8;
+        }
+        .ui-value {
+            font-size: 22px;
+            font-weight: bold;
+        }
+        #scoreValue { color: #4ade80; }
+        #timerValue { color: #fbbf24; }
+        #huntedValue { color: #60a5fa; }
+        #comboDisplay {
+            color: #f472b6;
+            font-size: 16px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        /* Overlays */
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.95);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+        }
+        .overlay.hidden {
+            display: none;
+        }
+        .overlay h1 {
+            font-size: 3em;
+            color: #4ade80;
+            margin-bottom: 10px;
+        }
+        .overlay h2 {
+            font-size: 1.8em;
+            color: #fbbf24;
+            margin-bottom: 20px;
+        }
+        .overlay p {
+            color: #94a3b8;
+            font-size: 1.1em;
+            margin: 8px 0;
+            max-width: 550px;
+            text-align: center;
+        }
+        .overlay button {
+            margin-top: 25px;
+            padding: 15px 50px;
+            font-size: 1.4em;
+            background: linear-gradient(135deg, #4ade80, #22c55e);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .overlay button:hover {
+            transform: scale(1.05);
+        }
+        .instructions {
+            background: rgba(255,255,255,0.1);
+            padding: 20px 30px;
+            border-radius: 10px;
+            margin: 15px 0;
+        }
+        .instructions li {
+            color: #e2e8f0;
+            margin: 8px 0;
+            text-align: left;
+        }
+
+        /* Flying email from PM to Koala */
+        .flying-email {
+            position: fixed;
+            font-size: 32px;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        .score-popup {
+            position: fixed;
+            font-size: 22px;
+            font-weight: bold;
+            color: #4ade80;
+            pointer-events: none;
+            animation: popUp 0.8s ease-out forwards;
+            z-index: 60;
+            text-shadow: 0 0 10px rgba(74, 222, 128, 0.5);
+        }
+        .miss-popup {
+            position: fixed;
+            font-size: 28px;
+            font-weight: bold;
+            color: #ef4444;
+            pointer-events: none;
+            animation: popUp 0.8s ease-out forwards;
+            z-index: 60;
+            text-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
+        }
+        @keyframes popUp {
+            0% { opacity: 1; transform: translateY(0) scale(1); }
+            100% { opacity: 0; transform: translateY(-50px) scale(1.4); }
+        }
+        .koala-caught {
+            animation: caught 0.4s ease-out forwards;
+        }
+        @keyframes caught {
+            0% { opacity: 1; transform: scale(1); }
+            50% { transform: scale(1.3); }
+            100% { opacity: 0; transform: scale(0); }
+        }
+        .koala-escaped {
+            animation: escaped 0.4s ease-out forwards;
+        }
+        @keyframes escaped {
+            0% { opacity: 1; }
+            100% { opacity: 0; transform: translateY(-30px); }
+        }
+        .hair-lost {
+            animation: hairFall 0.5s ease-out forwards;
+        }
+        @keyframes hairFall {
+            0% { transform: translateY(0); opacity: 1; }
+            100% { transform: translateY(60px); opacity: 0; }
+        }
+        .hair-grow {
+            animation: hairGrow 0.3s ease-out;
+        }
+        @keyframes hairGrow {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.5); }
+            100% { transform: scale(1); }
+        }
+
+        #stats p {
+            color: #cbd5e1;
+        }
+        #rating {
+            color: #fbbf24;
+            font-size: 1.1em;
+            margin-top: 10px;
+        }
+
+        /* Bomb feature - bottom left, 2x size */
+        #bombContainer {
+            position: absolute;
+            bottom: 100px;
+            left: 20px;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            z-index: 60;
+        }
+        #bombImage {
+            width: 160px;
+            height: 160px;
+            object-fit: contain;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        #bombImage:hover {
+            transform: scale(1.1);
+        }
+        #bombButton {
+            margin-top: 15px;
+            padding: 20px 40px;
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        #bombButton:hover {
+            transform: scale(1.05);
+        }
+        #bombMessage {
+            color: #ef4444;
+            font-size: 36px;
+            font-weight: bold;
+            margin-top: 15px;
+            display: none;
+        }
+        .flying-chicken {
+            position: fixed;
+            font-size: 32px;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        /* PM desk decoration */
+        #pmDesk {
+            position: absolute;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        /* Control panels container */
+        #controlPanels {
+            position: absolute;
+            top: 60px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 50;
+        }
+
+        /* Speed control panel */
+        #speedControl {
+            background: rgba(15, 23, 42, 0.9);
+            padding: 15px 20px;
+            border-radius: 12px;
+            color: white;
+            min-width: 180px;
+        }
+        #speedControl label {
+            display: block;
+            font-size: 12px;
+            color: #94a3b8;
+            margin-bottom: 8px;
+        }
+        #speedControl .speed-label {
+            font-size: 18px;
+            font-weight: bold;
+            color: #fbbf24;
+            text-align: center;
+            margin-top: 8px;
+        }
+        #speedSlider {
+            width: 100%;
+            height: 8px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: linear-gradient(90deg, #22c55e, #fbbf24, #ef4444);
+            border-radius: 4px;
+            outline: none;
+            cursor: pointer;
+        }
+        #speedSlider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        }
+        #speedSlider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        }
+        .difficulty-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            margin-left: 5px;
+        }
+
+        /* Spawn rate control panel */
+        #spawnControl {
+            background: rgba(15, 23, 42, 0.9);
+            padding: 15px 20px;
+            border-radius: 12px;
+            color: white;
+            min-width: 180px;
+        }
+        #spawnControl label {
+            display: block;
+            font-size: 12px;
+            color: #94a3b8;
+            margin-bottom: 8px;
+        }
+        #spawnControl .spawn-label {
+            font-size: 18px;
+            font-weight: bold;
+            color: #60a5fa;
+            text-align: center;
+            margin-top: 8px;
+        }
+        #spawnSlider {
+            width: 100%;
+            height: 8px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6, #ec4899);
+            border-radius: 4px;
+            outline: none;
+            cursor: pointer;
+        }
+        #spawnSlider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        }
+        #spawnSlider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        }
+    </style>
+</head>
+<body>
+    <div id="gameContainer">
+        <div id="office">
+            <!-- Ceiling with lights -->
+            <div id="ceiling">
+                <div class="ceiling-light" style="left: 10%;"></div>
+                <div class="ceiling-light" style="left: 35%;"></div>
+                <div class="ceiling-light" style="left: 60%;"></div>
+                <div class="ceiling-light" style="left: 85%;"></div>
+            </div>
+
+            <!-- Windows -->
+            <div class="window" style="top: 60px; right: 30px;"></div>
+            <div class="window" style="top: 220px; right: 30px;"></div>
+
+            <!-- Floor -->
+            <div id="floor"></div>
+
+            <!-- PM Area - LEFT, LARGE -->
+            <div id="pmArea">
+                <div id="pmCharacter">
+                    <div id="pmHair"></div>
+                    <div id="hairCount">Hair: <span id="hairValue">30</span></div>
+                    <img id="pmImage" src="pm.png" alt="PM" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><circle cx=%2250%22 cy=%2235%22 r=%2225%22 fill=%22%23fcd34d%22/><rect x=%2230%22 y=%2255%22 width=%2240%22 height=%2240%22 fill=%22%233b82f6%22/></svg>'">
+                </div>
+                <div id="pmInfo">
+                    <div id="pmStatus">Ready to hunt...</div>
+                </div>
+            </div>
+
+            <!-- Desk Area -->
+            <div id="deskArea" onclick="handleMissClick(event)"></div>
+
+            <!-- Bomb Container -->
+            <div id="bombContainer">
+                <img id="bombImage" src="bomb.png" alt="Bomb" onclick="useBomb()">
+                <button id="bombButton" onclick="useBomb()">leaning for support</button>
+                <div id="bombMessage">DoR left</div>
+            </div>
+
+            <!-- Control Panels -->
+            <div id="controlPanels">
+                <!-- Speed Control -->
+                <div id="speedControl">
+                    <label>KOALA SPEED (Difficulty)</label>
+                    <input type="range" id="speedSlider" min="1" max="10" value="5" oninput="updateSpeed(this.value)">
+                    <div class="speed-label" id="speedLabel">Normal</div>
+                </div>
+
+                <!-- Spawn Rate Control -->
+                <div id="spawnControl">
+                    <label>KOALA SPAWN RATE</label>
+                    <input type="range" id="spawnSlider" min="1" max="10" value="5" oninput="updateSpawnRate(this.value)">
+                    <div class="spawn-label" id="spawnLabel">Normal</div>
+                </div>
+            </div>
+
+            <!-- UI -->
+            <div id="ui">
+                <div class="ui-item">
+                    <div class="ui-label">SCORE</div>
+                    <div class="ui-value" id="scoreValue">0</div>
+                </div>
+                <div class="ui-item">
+                    <div class="ui-label">TIME</div>
+                    <div class="ui-value" id="timerValue">60</div>
+                </div>
+                <div class="ui-item">
+                    <div class="ui-label">HUNTED</div>
+                    <div class="ui-value" id="huntedValue">0</div>
+                </div>
+                <div id="comboDisplay">COMBO!</div>
+            </div>
+        </div>
+
+        <!-- Start Screen -->
+        <div id="startScreen" class="overlay">
+            <h1>🐨 KOALA HUNTING 🐨</h1>
+            <h2>PM Edition - Investment Team Office</h2>
+            <div class="instructions">
+                <ul>
+                    <li>🐨 Koalas wander around the open desks slacking off!</li>
+                    <li>📧 Click them to send a "friendly" PM email (hunting!)</li>
+                    <li>💇 Successful hunt = PM grows more hair!</li>
+                    <li>😱 Miss a koala = PM loses hair!</li>
+                    <li>⚡ Faster clicks = More points + Combo bonus!</li>
+                    <li>⏱️ 60 seconds - Hunt wisely!</li>
+                </ul>
+            </div>
+            <p><em>"Your timesheet looks suspicious..."</em> - PM</p>
+            <button onclick="startGame()">START HUNTING</button>
+        </div>
+
+        <!-- End Screen -->
+        <div id="endScreen" class="overlay hidden">
+            <h1>TIME'S UP!</h1>
+            <h2>Final Score: <span id="finalScore">0</span></h2>
+            <div id="stats"></div>
+            <p id="rating"></p>
+            <button onclick="startGame()">HUNT AGAIN</button>
+        </div>
+    </div>
+
+    <script>
+        // Game state
+        let score = 0;
+        let koalasHunted = 0;
+        let koalasEscaped = 0;
+        let timeLeft = 60;
+        let gameRunning = false;
+        let combo = 0;
+        let lastHuntTime = 0;
+        let hairCount = 30;
+        let bombUsesLeft = 2;
+        let bombDisabled = false;
+        let gameTimer;
+        let spawnTimer;
+
+        const koalas = [];
+        const maxKoalas = 12;
+
+        // Desk decorations - unique items for each desk
+        const deskDecorations = [
+            { items: ['☕', '📊'], positions: [{top: '50px', left: '8px'}, {top: '55px', right: '8px'}], name: 'Coffee Addict' },
+            { items: ['📚', '🖊️'], positions: [{top: '48px', left: '5px'}, {top: '60px', right: '10px'}], name: 'The Reader' },
+            { items: ['🌱', '📱'], positions: [{top: '45px', right: '5px'}, {top: '58px', left: '8px'}], name: 'Plant Parent' },
+            { items: ['🍩', '🥤'], positions: [{top: '52px', left: '6px'}, {top: '50px', right: '6px'}], name: 'Snack Time' },
+            { items: ['📰', '🕶️'], positions: [{top: '55px', left: '5px'}, {top: '48px', right: '8px'}], name: 'News Junkie' },
+            { items: ['🎧', '💿'], positions: [{top: '50px', right: '6px'}, {top: '58px', left: '10px'}], name: 'Music Lover' },
+            { items: ['📷', '🏆'], positions: [{top: '48px', left: '8px'}, {top: '52px', right: '5px'}], name: 'Award Winner' },
+            { items: ['🧸', '🖼️'], positions: [{top: '50px', right: '8px'}, {top: '55px', left: '5px'}], name: 'Cozy Corner' },
+            { items: ['💼', '📋'], positions: [{top: '52px', left: '6px'}, {top: '48px', right: '8px'}], name: 'Workaholic' },
+            { items: ['🎮', '🍕'], positions: [{top: '55px', right: '6px'}, {top: '50px', left: '8px'}], name: 'Gamer' }
+        ];
+
+        // Koala dialogues - emotional and moody
+        const koalaDialogues = [
+            "Ok then...", "wot?", "OK bye", "No bye", "what do you want",
+            "I'm BUSY", "Leave me alone!", "EXCUSE ME?!", "Not now...",
+            "Ugh, seriously?", "Can't you see I'm working?!", "Whatever...",
+            "I didn't sign up for this", "This is fine. Everything is fine.",
+            "Why are you like this?", "*aggressive munching*", "I QUIT!",
+            "New phone who dis", "Read 3:42 PM", "Seen ✓✓", "K.",
+            "Per my last oat...", "bruh", "sigh...", "WHAT NOW?!",
+            "I'm on BREAK", "Not my job", "That's above my pay grade",
+            "I have a meeting", "Sorry, in a tunnel", "My calendar is full",
+            "*screams internally*", "Is it Friday yet?", "I need coffee...",
+            "WHY IS IT ALWAYS ME", "This could've been an email",
+            "Unsubscribe", "lol no", "Hard pass", "I literally can't even"
+        ];
+
+        const koalaStates = [
+            { status: "Eating oats", emoji: "🥣", color: "#22c55e", points: 100 },
+            { status: "Napping", emoji: "😴", color: "#64748b", points: 150 },
+            { status: "FURIOUS!", emoji: "🔥", color: "#dc2626", points: 200 },
+            { status: "Fake working", emoji: "💻", color: "#3b82f6", points: 80 },
+            { status: "5th coffee", emoji: "☕", color: "#f59e0b", points: 120 },
+            { status: "YouTube", emoji: "📺", color: "#ec4899", points: 180 },
+            { status: "Lost on crypto", emoji: "📉", color: "#14b8a6", points: 250 },
+            { status: "LinkedIn flex", emoji: "💼", color: "#0ea5e9", points: 140 },
+            { status: "Existential crisis", emoji: "😵", color: "#8b5cf6", points: 160 },
+            { status: "Rage quit mode", emoji: "💢", color: "#ef4444", points: 220 },
+            { status: "Crying inside", emoji: "🥲", color: "#6366f1", points: 170 },
+            { status: "Passive aggressive", emoji: "🙃", color: "#f472b6", points: 190 }
+        ];
+
+        const pmMessages = [
+            "📧 'Can you analyze this ASAP?'",
+            "📧 'What does this mean?'",
+            "📧 'Why am I losing money AND hair?!'",
+            "📧 'Why is it down AGAIN?!'",
+            "📧 'Tony, your name is down 90% in 2 days'",
+            "📧 'What the f*** is DOR doing?!'",
+            "📧 'See me. NOW.'",
+            "📧 'Quick sync? It's urgent.'",
+            "📧 'Re: Re: Re: Your timesheet'",
+            "📧 'Per my LAST email...'",
+            "📧 'Just following up (x47)'",
+            "📧 'Let's circle back on this'",
+            "📧 'Can we align on this TODAY?'",
+            "📧 'Touch base before EOD'",
+            "📧 'Why is no one responding?!'",
+            "📧 'I need answers YESTERDAY'",
+            "📧 'Who approved this?!'",
+            "📧 'This is UNACCEPTABLE'",
+            "📧 'We need to talk...'",
+            "📧 'Calendar invite: Performance Review'",
+            "📧 'Where is the analysis I asked for?'",
+            "📧 'Did you even read my email?'",
+            "📧 'I'm adding your manager to this'",
+            "📧 'Please advise IMMEDIATELY'"
+        ];
+
+        // Speed control
+        let speedMultiplierGlobal = 1.0;
+
+        // Spawn rate control
+        let spawnRateMultiplier = 1.0;
+        const speedLabels = {
+            1: { text: "Sleepy", color: "#22c55e" },
+            2: { text: "Slow", color: "#4ade80" },
+            3: { text: "Chill", color: "#86efac" },
+            4: { text: "Easy", color: "#a3e635" },
+            5: { text: "Normal", color: "#fbbf24" },
+            6: { text: "Fast", color: "#fb923c" },
+            7: { text: "Hard", color: "#f97316" },
+            8: { text: "Crazy", color: "#ef4444" },
+            9: { text: "Insane", color: "#dc2626" },
+            10: { text: "IMPOSSIBLE", color: "#991b1b" }
+        };
+
+        function updateSpeed(value) {
+            const speedMap = {
+                1: 0.3, 2: 0.5, 3: 0.7, 4: 0.85,
+                5: 1.0, 6: 1.3, 7: 1.6, 8: 2.0,
+                9: 2.5, 10: 3.0
+            };
+            speedMultiplierGlobal = speedMap[value];
+            const label = speedLabels[value];
+            const labelEl = document.getElementById('speedLabel');
+            labelEl.textContent = label.text;
+            labelEl.style.color = label.color;
+        }
+
+        // Spawn rate labels
+        const spawnLabels = {
+            1: { text: "Very Low", color: "#3b82f6" },
+            2: { text: "Low", color: "#60a5fa" },
+            3: { text: "Slow", color: "#818cf8" },
+            4: { text: "Easy", color: "#a78bfa" },
+            5: { text: "Normal", color: "#c084fc" },
+            6: { text: "Fast", color: "#e879f9" },
+            7: { text: "High", color: "#f472b6" },
+            8: { text: "Very High", color: "#fb7185" },
+            9: { text: "Crazy", color: "#f43f5e" },
+            10: { text: "MAXIMUM", color: "#ef4444" }
+        };
+
+        function updateSpawnRate(value) {
+            const spawnMap = {
+                1: 0.3, 2: 0.5, 3: 0.7, 4: 0.85,
+                5: 1.0, 6: 1.5, 7: 2.0, 8: 2.5,
+                9: 3.0, 10: 4.0
+            };
+            spawnRateMultiplier = spawnMap[value];
+            const label = spawnLabels[value];
+            const labelEl = document.getElementById('spawnLabel');
+            labelEl.textContent = label.text;
+            labelEl.style.color = label.color;
+        }
+
+        // Initialize desks with unique decorations
+        function initDesks() {
+            const deskArea = document.getElementById('deskArea');
+            deskArea.innerHTML = '';
+
+            for (let i = 0; i < 10; i++) {
+                const desk = document.createElement('div');
+                desk.className = 'desk';
+                desk.id = `desk-${i}`;
+
+                const deco = deskDecorations[i];
+                let itemsHtml = '';
+                deco.items.forEach((item, idx) => {
+                    const pos = deco.positions[idx];
+                    let style = '';
+                    for (let key in pos) {
+                        style += `${key}: ${pos[key]}; `;
+                    }
+                    itemsHtml += `<div class="desk-item" style="${style}">${item}</div>`;
+                });
+
+                desk.innerHTML = `
+                    <div class="monitor"></div>
+                    ${itemsHtml}
+                    <div class="chair"></div>
+                    <div class="desk-label">${deco.name}</div>
+                `;
+                deskArea.appendChild(desk);
+            }
+        }
+
+        // Update hair display
+        function updateHair() {
+            const hairDiv = document.getElementById('pmHair');
+            hairDiv.innerHTML = '';
+
+            const displayHairs = Math.min(hairCount, 120);
+            for (let i = 0; i < displayHairs; i++) {
+                const hair = document.createElement('span');
+                hair.className = 'hair-strand';
+                hair.textContent = '|';
+                hair.style.color = `hsl(${25 + Math.random() * 20}, 60%, ${25 + Math.random() * 20}%)`;
+                hairDiv.appendChild(hair);
+            }
+
+            document.getElementById('hairValue').textContent = hairCount;
+        }
+
+        // Add hair with animation
+        function addHair(amount) {
+            hairCount = Math.min(hairCount + amount, 150);
+            updateHair();
+
+            const hairs = document.querySelectorAll('.hair-strand');
+            const lastHairs = Array.from(hairs).slice(-amount);
+            lastHairs.forEach(h => h.classList.add('hair-grow'));
+        }
+
+        // Lose hair with animation
+        function loseHair(amount) {
+            const hairDiv = document.getElementById('pmHair');
+            const hairs = Array.from(hairDiv.querySelectorAll('.hair-strand')).slice(-amount);
+
+            hairs.forEach((hair, i) => {
+                setTimeout(() => {
+                    hair.classList.add('hair-lost');
+                    setTimeout(() => hair.remove(), 500);
+                }, i * 50);
+            });
+
+            hairCount = Math.max(hairCount - amount, 0);
+            setTimeout(() => {
+                document.getElementById('hairValue').textContent = hairCount;
+            }, amount * 50 + 500);
+        }
+
+        // Create koala SVG
+        function createKoalaSVG(state) {
+            const stateData = koalaStates[state];
+            const isAngry = stateData.status === "ANGRY!";
+            const isSleeping = stateData.status === "Napping";
+
+            return `
+                <svg viewBox="0 0 100 100" width="82" height="82">
+                    <ellipse cx="20" cy="25" rx="15" ry="15" fill="#6b7280"/>
+                    <ellipse cx="20" cy="25" rx="9" ry="9" fill="#fca5a5"/>
+                    <ellipse cx="80" cy="25" rx="15" ry="15" fill="#6b7280"/>
+                    <ellipse cx="80" cy="25" rx="9" ry="9" fill="#fca5a5"/>
+                    <ellipse cx="50" cy="50" rx="32" ry="30" fill="#6b7280"/>
+                    <ellipse cx="50" cy="55" rx="22" ry="20" fill="#d1d5db"/>
+                    ${isSleeping ? `
+                        <path d="M32 45 Q37 40 42 45" stroke="#000" stroke-width="3" fill="none"/>
+                        <path d="M58 45 Q63 40 68 45" stroke="#000" stroke-width="3" fill="none"/>
+                        <text x="70" y="30" font-size="12">💤</text>
+                    ` : `
+                        <ellipse cx="37" cy="45" rx="5" ry="6" fill="#000"/>
+                        <ellipse cx="63" cy="45" rx="5" ry="6" fill="#000"/>
+                        <circle cx="38" cy="43" r="2" fill="#fff"/>
+                        <circle cx="64" cy="43" r="2" fill="#fff"/>
+                    `}
+                    <ellipse cx="50" cy="58" rx="9" ry="6" fill="#1f2937"/>
+                    ${isAngry ? `
+                        <path d="M28 35 L42 42" stroke="#000" stroke-width="3"/>
+                        <path d="M72 35 L58 42" stroke="#000" stroke-width="3"/>
+                        <text x="50" y="18" text-anchor="middle" font-size="14">🔥</text>
+                    ` : ''}
+                    <text x="50" y="92" text-anchor="middle" font-size="14">${stateData.emoji}</text>
+                </svg>
+            `;
+        }
+
+        // Animate email flying from PM to Koala
+        function animateEmailToKoala(koalaX, koalaY) {
+            const pmArea = document.getElementById('pmArea');
+            const pmRect = pmArea.getBoundingClientRect();
+
+            // Start position (PM's location)
+            const startX = pmRect.left + pmRect.width / 2;
+            const startY = pmRect.top + pmRect.height / 2;
+
+            // End position (Koala's location)
+            const endX = koalaX;
+            const endY = koalaY;
+
+            const email = document.createElement('div');
+            email.className = 'flying-email';
+            email.textContent = '📧';
+            email.style.left = startX + 'px';
+            email.style.top = startY + 'px';
+            email.style.transform = 'translate(-50%, -50%)';
+            document.body.appendChild(email);
+
+            // Animate using requestAnimationFrame
+            const duration = 400;
+            const startTime = Date.now();
+
+            function animate() {
+                const elapsed = Date.now() - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+
+                // Easing function (ease-out)
+                const easeProgress = 1 - Math.pow(1 - progress, 3);
+
+                // Calculate current position with arc
+                const currentX = startX + (endX - startX) * easeProgress;
+                const arcHeight = -80;
+                const arcProgress = Math.sin(progress * Math.PI);
+                const currentY = startY + (endY - startY) * easeProgress + arcHeight * arcProgress;
+
+                // Scale and rotate
+                const scale = 1 + 0.5 * arcProgress;
+                const rotation = progress * 360;
+
+                email.style.left = currentX + 'px';
+                email.style.top = currentY + 'px';
+                email.style.transform = `translate(-50%, -50%) scale(${scale}) rotate(${rotation}deg)`;
+
+                if (progress < 1) {
+                    requestAnimationFrame(animate);
+                } else {
+                    // Burst effect at the end
+                    email.style.transition = 'all 0.2s';
+                    email.style.transform = 'translate(-50%, -50%) scale(2)';
+                    email.style.opacity = '0';
+                    setTimeout(() => email.remove(), 200);
+                }
+            }
+
+            requestAnimationFrame(animate);
+        }
+
+        // Spawn koala
+        function spawnKoala() {
+            if (!gameRunning) return;
+
+            const activeKoalas = koalas.filter(k => k.active).length;
+            if (activeKoalas >= maxKoalas) return;
+
+            const deskArea = document.getElementById('deskArea');
+            const areaRect = deskArea.getBoundingClientRect();
+
+            const state = Math.floor(Math.random() * koalaStates.length);
+            const stateData = koalaStates[state];
+            const dialogue = koalaDialogues[Math.floor(Math.random() * koalaDialogues.length)];
+
+            const koalaId = Date.now() + Math.random();
+            const koalaDiv = document.createElement('div');
+            koalaDiv.className = 'koala';
+            koalaDiv.id = `koala-${koalaId}`;
+
+            const startX = Math.random() * (areaRect.width - 70);
+            const startY = Math.random() * (areaRect.height - 70);
+
+            koalaDiv.style.left = startX + 'px';
+            koalaDiv.style.top = startY + 'px';
+
+            // 1/10 chance to use koala.jpg
+            const useKoalaImage = Math.random() < 0.1;
+
+            koalaDiv.innerHTML = `
+                <div class="koala-status" style="background: ${stateData.color}">${dialogue}</div>
+                ${useKoalaImage ?
+                    `<img src="koala.jpg" alt="Koala" style="width: 82px; height: 82px; object-fit: contain;">` :
+                    createKoalaSVG(state)}
+            `;
+
+            koalaDiv.onclick = (e) => {
+                e.stopPropagation();
+                huntKoala(koalaId, e);
+            };
+
+            deskArea.appendChild(koalaDiv);
+
+            // Base speed - adjustable via slider
+            const baseSpeed = 5;
+
+            const koalaData = {
+                id: koalaId,
+                element: koalaDiv,
+                state: state,
+                spawnTime: Date.now(),
+                active: true,
+                x: startX,
+                y: startY,
+                vx: (Math.random() - 0.5) * baseSpeed,
+                vy: (Math.random() - 0.5) * baseSpeed,
+                baseSpeed: baseSpeed,
+                speedMultiplier: 1,
+                lifetime: 4000 + Math.random() * 4000,
+                lastDialogueChange: Date.now()
+            };
+
+            koalas.push(koalaData);
+            moveKoala(koalaData);
+
+            // Random speed bursts
+            scheduleSpeedBurst(koalaData);
+
+            setTimeout(() => {
+                escapeKoala(koalaId);
+            }, koalaData.lifetime);
+        }
+
+        // Schedule random speed bursts
+        function scheduleSpeedBurst(koala) {
+            if (!koala.active || !gameRunning) return;
+
+            const delay = 500 + Math.random() * 2000;
+            setTimeout(() => {
+                if (!koala.active || !gameRunning) return;
+
+                // Random speed burst: 2x or 3x
+                const burst = Math.random() < 0.5 ? 2 : 3;
+                koala.speedMultiplier = burst;
+
+                // Update dialogue when speed changes
+                const newDialogue = koalaDialogues[Math.floor(Math.random() * koalaDialogues.length)];
+                const statusEl = koala.element.querySelector('.koala-status');
+                if (statusEl) {
+                    statusEl.textContent = burst === 3 ? "AAAAAHHH!!!" : newDialogue;
+                    statusEl.style.background = burst === 3 ? '#ef4444' : statusEl.style.background;
+                }
+
+                // Reset after burst
+                setTimeout(() => {
+                    if (koala.active) {
+                        koala.speedMultiplier = 1;
+                        if (statusEl) {
+                            statusEl.textContent = koalaDialogues[Math.floor(Math.random() * koalaDialogues.length)];
+                        }
+                    }
+                }, 300 + Math.random() * 500);
+
+                scheduleSpeedBurst(koala);
+            }, delay);
+        }
+
+        // Move koala around
+        function moveKoala(koala) {
+            if (!koala.active || !gameRunning) return;
+
+            const deskArea = document.getElementById('deskArea');
+            const areaRect = deskArea.getBoundingClientRect();
+            const maxX = areaRect.width - 90;
+            const maxY = areaRect.height - 90;
+
+            // Apply both local and global speed multipliers
+            const effectiveVx = koala.vx * koala.speedMultiplier * speedMultiplierGlobal;
+            const effectiveVy = koala.vy * koala.speedMultiplier * speedMultiplierGlobal;
+
+            koala.x += effectiveVx;
+            koala.y += effectiveVy;
+
+            // Bounce off walls
+            if (koala.x <= 0 || koala.x >= maxX) {
+                koala.vx *= -1;
+                koala.x = Math.max(0, Math.min(maxX, koala.x));
+            }
+            if (koala.y <= 0 || koala.y >= maxY) {
+                koala.vy *= -1;
+                koala.y = Math.max(0, Math.min(maxY, koala.y));
+            }
+
+            // Random direction changes
+            if (Math.random() < 0.025) {
+                koala.vx = (Math.random() - 0.5) * koala.baseSpeed;
+                koala.vy = (Math.random() - 0.5) * koala.baseSpeed;
+
+                // Change dialogue randomly
+                if (Math.random() < 0.4) {
+                    const statusEl = koala.element.querySelector('.koala-status');
+                    if (statusEl) {
+                        statusEl.textContent = koalaDialogues[Math.floor(Math.random() * koalaDialogues.length)];
+                        statusEl.style.background = koalaStates[koala.state].color;
+                    }
+                }
+            }
+
+            koala.element.style.left = koala.x + 'px';
+            koala.element.style.top = koala.y + 'px';
+
+            requestAnimationFrame(() => moveKoala(koala));
+        }
+
+        // Koala caught dialogues
+        const koalaCaughtDialogues = [
+            "NOOOOO!", "This is UNFAIR!", "I'll remember this!",
+            "My lawyer will hear about this!", "NOT LIKE THIS!",
+            "Why me?!", "I was just vibing!", "Betrayal!",
+            "*dramatic koala noises*", "Tell my family I ate oats!",
+            "HR violation!", "I'm filing a complaint!", "CURSE YOU PM!",
+            "My crypto gains!!!", "gg no re", "I was AFK!",
+            "Lag! It was lag!", "This is rigged!", "My streak!!"
+        ];
+
+        // Koala escape dialogues
+        const koalaEscapeDialogues = [
+            "Later losers!", "Can't touch this!", "Too slow!",
+            "EZ", "Git gud PM", "Skill issue", "Bye Felicia!",
+            "*dabs and leaves*", "Freedom!", "You'll never catch me!",
+            "Back to the eucalyptus!", "PM who?", "Outplayed!",
+            "See ya never!", "I'm built different", "GG EZ no RE"
+        ];
+
+        // Hunt koala
+        function huntKoala(koalaId, event) {
+            const koala = koalas.find(k => k.id === koalaId && k.active);
+            if (!koala) return;
+
+            koala.active = false;
+
+            // Show caught dialogue
+            const statusEl = koala.element.querySelector('.koala-status');
+            if (statusEl) {
+                statusEl.textContent = koalaCaughtDialogues[Math.floor(Math.random() * koalaCaughtDialogues.length)];
+                statusEl.style.background = '#dc2626';
+            }
+
+            const reactionTime = Date.now() - koala.spawnTime;
+            const basePoints = koalaStates[koala.state].points;
+            const timeBonus = Math.max(0, Math.floor((5000 - reactionTime) / 50));
+
+            const now = Date.now();
+            if (now - lastHuntTime < 1500) {
+                combo = Math.min(combo + 1, 5);
+            } else {
+                combo = 1;
+            }
+            lastHuntTime = now;
+
+            const totalPoints = (basePoints + timeBonus) * combo;
+
+            score += totalPoints;
+            koalasHunted++;
+            addHair(combo);
+
+            document.getElementById('scoreValue').textContent = score;
+            document.getElementById('huntedValue').textContent = koalasHunted;
+
+            if (combo > 1) {
+                const comboEl = document.getElementById('comboDisplay');
+                comboEl.textContent = `COMBO x${combo}!`;
+                comboEl.style.opacity = 1;
+                setTimeout(() => comboEl.style.opacity = 0, 800);
+            }
+
+            document.getElementById('pmStatus').textContent = pmMessages[Math.floor(Math.random() * pmMessages.length)];
+            setTimeout(() => {
+                if (gameRunning) document.getElementById('pmStatus').textContent = "Scanning for slackers...";
+            }, 1200);
+
+            // Email animation from PM to Koala
+            animateEmailToKoala(event.clientX, event.clientY);
+
+            // Score popup
+            const popup = document.createElement('div');
+            popup.className = 'score-popup';
+            popup.textContent = `+${totalPoints}`;
+            popup.style.left = event.clientX + 'px';
+            popup.style.top = (event.clientY - 20) + 'px';
+            document.body.appendChild(popup);
+            setTimeout(() => popup.remove(), 800);
+
+            koala.element.classList.add('koala-caught');
+            setTimeout(() => koala.element.remove(), 400);
+
+            updateBombVisibility();
+        }
+
+        // Koala escapes
+        function escapeKoala(koalaId) {
+            const koala = koalas.find(k => k.id === koalaId);
+            if (!koala || !koala.active) return;
+
+            koala.active = false;
+            koalasEscaped++;
+            loseHair(3);
+
+            // Show escape dialogue
+            const statusEl = koala.element.querySelector('.koala-status');
+            if (statusEl) {
+                statusEl.textContent = koalaEscapeDialogues[Math.floor(Math.random() * koalaEscapeDialogues.length)];
+                statusEl.style.background = '#22c55e';
+            }
+
+            const pmEscapeMessages = [
+                "😱 One got away!",
+                "😤 They're too fast!",
+                "💢 UNACCEPTABLE!",
+                "😡 My hair!!!",
+                "🤬 WHO HIRED THESE KOALAS?!"
+            ];
+            document.getElementById('pmStatus').textContent = pmEscapeMessages[Math.floor(Math.random() * pmEscapeMessages.length)];
+            setTimeout(() => {
+                if (gameRunning) document.getElementById('pmStatus').textContent = "Scanning for slackers...";
+            }, 1200);
+
+            koala.element.classList.add('koala-escaped');
+            setTimeout(() => koala.element.remove(), 400);
+        }
+
+        // Check and update bomb visibility
+        function updateBombVisibility() {
+            if (!gameRunning) return;
+
+            const activeKoalas = koalas.filter(k => k.active).length;
+            const bombContainer = document.getElementById('bombContainer');
+
+            if (activeKoalas >= 5 && !bombDisabled) {
+                bombContainer.style.display = 'flex';
+            } else if (!bombDisabled) {
+                bombContainer.style.display = 'none';
+            }
+        }
+
+        // Animate chicken from bomb to koala
+        function animateChickenToKoala(koalaX, koalaY, onComplete) {
+            const bombContainer = document.getElementById('bombContainer');
+            const bombRect = bombContainer.getBoundingClientRect();
+
+            const startX = bombRect.left + bombRect.width / 2;
+            const startY = bombRect.top + bombRect.height / 2;
+
+            const chicken = document.createElement('div');
+            chicken.className = 'flying-chicken';
+            chicken.textContent = '🐔';
+            chicken.style.left = startX + 'px';
+            chicken.style.top = startY + 'px';
+            chicken.style.transform = 'translate(-50%, -50%)';
+            document.body.appendChild(chicken);
+
+            const duration = 300;
+            const startTime = Date.now();
+
+            function animate() {
+                const elapsed = Date.now() - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+
+                const easeProgress = 1 - Math.pow(1 - progress, 3);
+
+                const currentX = startX + (koalaX - startX) * easeProgress;
+                const arcHeight = -50;
+                const arcProgress = Math.sin(progress * Math.PI);
+                const currentY = startY + (koalaY - startY) * easeProgress + arcHeight * arcProgress;
+
+                const scale = 1 + 0.3 * arcProgress;
+                const rotation = progress * 720;
+
+                chicken.style.left = currentX + 'px';
+                chicken.style.top = currentY + 'px';
+                chicken.style.transform = `translate(-50%, -50%) scale(${scale}) rotate(${rotation}deg)`;
+
+                if (progress < 1) {
+                    requestAnimationFrame(animate);
+                } else {
+                    chicken.style.transition = 'all 0.15s';
+                    chicken.style.transform = 'translate(-50%, -50%) scale(1.5)';
+                    chicken.style.opacity = '0';
+                    setTimeout(() => {
+                        chicken.remove();
+                        if (onComplete) onComplete();
+                    }, 150);
+                }
+            }
+
+            requestAnimationFrame(animate);
+        }
+
+        // Use bomb function
+        function useBomb() {
+            if (bombDisabled) return;
+
+            const activeKoalas = koalas.filter(k => k.active);
+            if (activeKoalas.length < 5) return;
+
+            if (bombUsesLeft <= 0) {
+                // Third attempt - show chicken and message
+                bombDisabled = true;
+                document.getElementById('bombImage').src = 'chicken.jpg';
+                document.getElementById('bombButton').style.display = 'none';
+                document.getElementById('bombMessage').style.display = 'block';
+                return;
+            }
+
+            bombUsesLeft--;
+
+            // Send chickens to all koalas
+            const deskArea = document.getElementById('deskArea');
+            const areaRect = deskArea.getBoundingClientRect();
+
+            activeKoalas.forEach((koala, index) => {
+                const koalaRect = koala.element.getBoundingClientRect();
+                const koalaX = koalaRect.left + koalaRect.width / 2;
+                const koalaY = koalaRect.top + koalaRect.height / 2;
+
+                setTimeout(() => {
+                    animateChickenToKoala(koalaX, koalaY, () => {
+                        if (koala.active) {
+                            koala.active = false;
+                            koalasHunted++;
+                            score += 50;
+                            document.getElementById('scoreValue').textContent = score;
+                            document.getElementById('huntedValue').textContent = koalasHunted;
+
+                            koala.element.classList.add('koala-caught');
+                            setTimeout(() => koala.element.remove(), 400);
+                        }
+                    });
+                }, index * 100);
+            });
+
+            // Hide bomb after use
+            setTimeout(() => {
+                document.getElementById('bombContainer').style.display = 'none';
+            }, activeKoalas.length * 100 + 500);
+
+            document.getElementById('pmStatus').textContent = "🐔 CHICKEN ATTACK!!! 🐔";
+            setTimeout(() => {
+                if (gameRunning) document.getElementById('pmStatus').textContent = "Scanning for slackers...";
+            }, 1500);
+        }
+
+        // Handle miss click on desk area
+        function handleMissClick(event) {
+            if (!gameRunning) return;
+
+            // Check if click was on a koala (koala clicks are handled separately with stopPropagation)
+            if (event.target.closest('.koala')) return;
+
+            // Animate email from PM to click point
+            animateEmailToKoala(event.clientX, event.clientY);
+
+            // Show miss popup
+            const popup = document.createElement('div');
+            popup.className = 'miss-popup';
+            popup.textContent = 'miss!';
+            popup.style.left = event.clientX + 'px';
+            popup.style.top = (event.clientY - 20) + 'px';
+            document.body.appendChild(popup);
+            setTimeout(() => popup.remove(), 800);
+
+            // Reset combo on miss
+            combo = 0;
+
+            // PM reaction
+            const missMessages = [
+                "😤 Missed!",
+                "🎯 Aim better!",
+                "👀 Where are you clicking?!",
+                "💢 Focus!",
+                "😠 That was empty space!"
+            ];
+            document.getElementById('pmStatus').textContent = missMessages[Math.floor(Math.random() * missMessages.length)];
+            setTimeout(() => {
+                if (gameRunning) document.getElementById('pmStatus').textContent = "Scanning for slackers...";
+            }, 1000);
+        }
+
+        // Start game
+        function startGame() {
+            document.getElementById('startScreen').classList.add('hidden');
+            document.getElementById('endScreen').classList.add('hidden');
+
+            score = 0;
+            koalasHunted = 0;
+            koalasEscaped = 0;
+            timeLeft = 60;
+            combo = 0;
+            lastHuntTime = 0;
+            hairCount = 30;
+            bombUsesLeft = 2;
+            bombDisabled = false;
+            document.getElementById('bombImage').src = 'bomb.png';
+            document.getElementById('bombButton').style.display = 'block';
+            document.getElementById('bombMessage').style.display = 'none';
+            document.getElementById('bombContainer').style.display = 'none';
+            gameRunning = true;
+
+            koalas.forEach(k => { if (k.element) k.element.remove(); });
+            koalas.length = 0;
+
+            document.getElementById('scoreValue').textContent = '0';
+            document.getElementById('timerValue').textContent = '60';
+            document.getElementById('huntedValue').textContent = '0';
+            document.getElementById('pmStatus').textContent = 'Ready to hunt...';
+            updateHair();
+
+            gameTimer = setInterval(() => {
+                timeLeft--;
+                document.getElementById('timerValue').textContent = timeLeft;
+                if (timeLeft <= 0) endGame();
+            }, 1000);
+
+            spawnTimer = setInterval(() => {
+                const baseChance = 0.5 * spawnRateMultiplier;
+                if (Math.random() < baseChance) spawnKoala();
+                if (Math.random() < baseChance) spawnKoala();
+                if (spawnRateMultiplier >= 2.0 && Math.random() < baseChance * 0.5) spawnKoala();
+                if (spawnRateMultiplier >= 3.0 && Math.random() < baseChance * 0.5) spawnKoala();
+                updateBombVisibility();
+            }, 1000);
+
+            setTimeout(spawnKoala, 300);
+            setTimeout(spawnKoala, 450);
+            setTimeout(spawnKoala, 600);
+            setTimeout(spawnKoala, 750);
+        }
+
+        // End game
+        function endGame() {
+            gameRunning = false;
+            clearInterval(gameTimer);
+            clearInterval(spawnTimer);
+
+            koalas.forEach(k => { if (k.element) k.element.remove(); });
+
+            let rating = '';
+            if (score >= 8000) {
+                rating = "🏆 LEGENDARY HUNTER - Koalas fear your inbox!";
+            } else if (score >= 5000) {
+                rating = "⭐ Senior PM - Email master!";
+            } else if (score >= 3000) {
+                rating = "📊 PM - Solid performance!";
+            } else if (score >= 1500) {
+                rating = "📋 Associate - Keep clicking!";
+            } else {
+                rating = "🐨 Koala Sympathizer - They've won you over";
+            }
+
+            const hairStatus = hairCount >= 50 ? "Hair Status: THRIVING! 💇" :
+                              hairCount >= 30 ? "Hair Status: Holding on... 😅" :
+                              hairCount >= 10 ? "Hair Status: SOS! 😰" :
+                              "Hair Status: Seeking treatment 👴";
+
+            document.getElementById('finalScore').textContent = score;
+            document.getElementById('stats').innerHTML = `
+                <p>Koalas Hunted: ${koalasHunted} 📧</p>
+                <p>Koalas Escaped: ${koalasEscaped} 🏃</p>
+                <p>Final Hair Count: ${hairCount}</p>
+                <p>${hairStatus}</p>
+            `;
+            document.getElementById('rating').textContent = rating;
+
+            document.getElementById('endScreen').classList.remove('hidden');
+        }
+
+        initDesks();
+    </script>
+</body>
+</html>
