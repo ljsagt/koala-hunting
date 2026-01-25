@@ -119,12 +119,12 @@
             padding-top: 10px;
         }
         #pmImage {
-            width: 240px;
-            height: 240px;
+            width: 160px;
+            height: 160px;
             object-fit: contain;
             position: relative;
             z-index: 1;
-            margin-top: 60px;
+            margin-top: 40px;
         }
         #pmHair {
             position: absolute;
@@ -330,8 +330,13 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-start;
+            padding-top: 20px;
+            padding-bottom: 40px;
             z-index: 100;
+            overflow-y: auto;
+            overflow-x: hidden;
+            -webkit-overflow-scrolling: touch;
         }
         .overlay.hidden {
             display: none;
@@ -462,8 +467,8 @@
             z-index: 60;
         }
         #bombImage {
-            width: 160px;
-            height: 160px;
+            width: 107px;
+            height: 107px;
             object-fit: contain;
             cursor: pointer;
             transition: transform 0.2s;
@@ -495,7 +500,7 @@
         }
         .flying-chicken {
             position: fixed;
-            font-size: 32px;
+            font-size: 21px;
             pointer-events: none;
             z-index: 100;
         }
@@ -581,6 +586,67 @@
             box-shadow: 0 2px 6px rgba(0,0,0,0.3);
         }
 
+        /* Scroll indicator */
+        .scroll-indicator {
+            position: fixed;
+            right: 15px;
+            bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 200;
+            animation: bounce 1.5s infinite;
+            pointer-events: none;
+        }
+        .scroll-indicator span {
+            color: #4ade80;
+            font-size: 14px;
+            margin-bottom: 5px;
+            text-shadow: 0 0 10px rgba(74, 222, 128, 0.5);
+        }
+        .scroll-arrow {
+            font-size: 28px;
+            color: #4ade80;
+            text-shadow: 0 0 10px rgba(74, 222, 128, 0.5);
+        }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(10px); }
+        }
+        .scroll-indicator.hidden {
+            display: none;
+        }
+
+        /* Mobile responsive adjustments */
+        @media (max-width: 768px) {
+            .overlay h1 {
+                font-size: 1.8em;
+            }
+            .overlay h2 {
+                font-size: 1.2em;
+            }
+            .instructions {
+                padding: 15px 20px;
+                margin: 10px 15px;
+            }
+            .instructions li {
+                font-size: 0.9em;
+                margin: 6px 0;
+            }
+            .settings-container {
+                flex-direction: column;
+                gap: 15px;
+                width: 90%;
+            }
+            .setting-item {
+                min-width: unset;
+                width: 100%;
+            }
+            .overlay button {
+                padding: 12px 40px;
+                font-size: 1.2em;
+            }
+        }
 
     </style>
 </head>
@@ -641,6 +707,12 @@
                 </div>
                 <div id="comboDisplay">COMBO!</div>
             </div>
+        </div>
+
+        <!-- Scroll Indicator -->
+        <div id="scrollIndicator" class="scroll-indicator">
+            <span>SCROLL</span>
+            <div class="scroll-arrow">⬇</div>
         </div>
 
         <!-- Start Screen -->
@@ -1436,6 +1508,7 @@
         function startGame() {
             document.getElementById('startScreen').classList.add('hidden');
             document.getElementById('endScreen').classList.add('hidden');
+            document.getElementById('scrollIndicator').classList.add('hidden');
 
             score = 0;
             koalasHunted = 0;
@@ -1521,6 +1594,29 @@
         }
 
         initDesks();
+
+        // Scroll indicator logic
+        const startScreen = document.getElementById('startScreen');
+        const scrollIndicator = document.getElementById('scrollIndicator');
+
+        function checkScroll() {
+            if (!startScreen.classList.contains('hidden')) {
+                const isScrollable = startScreen.scrollHeight > startScreen.clientHeight;
+                const isAtBottom = startScreen.scrollTop + startScreen.clientHeight >= startScreen.scrollHeight - 50;
+
+                if (!isScrollable || isAtBottom) {
+                    scrollIndicator.classList.add('hidden');
+                } else {
+                    scrollIndicator.classList.remove('hidden');
+                }
+            } else {
+                scrollIndicator.classList.add('hidden');
+            }
+        }
+
+        startScreen.addEventListener('scroll', checkScroll);
+        window.addEventListener('resize', checkScroll);
+        setTimeout(checkScroll, 100);
     </script>
 </body>
 </html>
