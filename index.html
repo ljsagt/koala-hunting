@@ -253,11 +253,11 @@
             color: #64748b;
         }
 
-        /* Koala - 1.5x bigger */
+        /* Koala - half size for mobile */
         .koala {
             position: absolute;
-            width: 82px;
-            height: 82px;
+            width: 41px;
+            height: 41px;
             cursor: pointer;
             transition: transform 0.1s;
             z-index: 30;
@@ -271,13 +271,13 @@
         }
         .koala-status {
             position: absolute;
-            top: -24px;
+            top: -18px;
             left: 50%;
             transform: translateX(-50%);
-            font-size: 16px;
+            font-size: 10px;
             color: white;
-            padding: 4px 10px;
-            border-radius: 10px;
+            padding: 2px 6px;
+            border-radius: 6px;
             white-space: nowrap;
             font-weight: bold;
             text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
@@ -510,169 +510,56 @@
             color: #64748b;
         }
 
-        /* Control panels container */
-        #controlPanels {
-            position: absolute;
-            top: 60px;
-            right: 20px;
+        /* Settings container for start screen */
+        .settings-container {
             display: flex;
-            flex-direction: column;
-            gap: 10px;
-            z-index: 50;
+            gap: 30px;
+            margin: 20px 0;
         }
-
-        /* Speed control panel */
-        #speedControl {
-            background: rgba(15, 23, 42, 0.9);
+        .setting-item {
+            background: rgba(255, 255, 255, 0.1);
             padding: 15px 20px;
             border-radius: 12px;
-            color: white;
-            min-width: 180px;
+            min-width: 200px;
         }
-        #speedControl label {
+        .setting-item label {
             display: block;
             font-size: 12px;
             color: #94a3b8;
             margin-bottom: 8px;
         }
-        #speedControl .speed-label {
+        .setting-item .speed-label,
+        .setting-item .spawn-label {
             font-size: 18px;
             font-weight: bold;
+            text-align: center;
+            margin-top: 8px;
+        }
+        .setting-item .speed-label {
             color: #fbbf24;
-            text-align: center;
-            margin-top: 8px;
         }
-        #speedSlider {
-            width: 100%;
-            height: 8px;
-            -webkit-appearance: none;
-            appearance: none;
-            background: linear-gradient(90deg, #22c55e, #fbbf24, #ef4444);
-            border-radius: 4px;
-            outline: none;
-            cursor: pointer;
-        }
-        #speedSlider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 20px;
-            height: 20px;
-            background: white;
-            border-radius: 50%;
-            cursor: pointer;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-        }
-        #speedSlider::-moz-range-thumb {
-            width: 20px;
-            height: 20px;
-            background: white;
-            border-radius: 50%;
-            cursor: pointer;
-            border: none;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-        }
-        .difficulty-badge {
-            display: inline-block;
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-size: 10px;
-            margin-left: 5px;
-        }
-
-        /* Password Protection */
-        #passwordOverlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 9999;
-        }
-        #passwordOverlay.hidden {
-            display: none;
-        }
-        #passwordOverlay h1 {
-            font-size: 3em;
-            color: #4ade80;
-            margin-bottom: 20px;
-        }
-        #passwordOverlay p {
-            color: #94a3b8;
-            margin-bottom: 30px;
-            font-size: 1.2em;
-        }
-        #passwordInput {
-            padding: 15px 30px;
-            font-size: 1.2em;
-            border: 3px solid #4ade80;
-            border-radius: 10px;
-            background: #1e293b;
-            color: white;
-            text-align: center;
-            outline: none;
-            margin-bottom: 20px;
-        }
-        #passwordInput:focus {
-            border-color: #22c55e;
-            box-shadow: 0 0 20px rgba(74, 222, 128, 0.3);
-        }
-        #passwordSubmit {
-            padding: 15px 50px;
-            font-size: 1.2em;
-            background: linear-gradient(135deg, #4ade80, #22c55e);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-        #passwordSubmit:hover {
-            transform: scale(1.05);
-        }
-        #passwordError {
-            color: #ef4444;
-            margin-top: 15px;
-            font-size: 1em;
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-
-        /* Spawn rate control panel */
-        #spawnControl {
-            background: rgba(15, 23, 42, 0.9);
-            padding: 15px 20px;
-            border-radius: 12px;
-            color: white;
-            min-width: 180px;
-        }
-        #spawnControl label {
-            display: block;
-            font-size: 12px;
-            color: #94a3b8;
-            margin-bottom: 8px;
-        }
-        #spawnControl .spawn-label {
-            font-size: 18px;
-            font-weight: bold;
+        .setting-item .spawn-label {
             color: #60a5fa;
-            text-align: center;
-            margin-top: 8px;
         }
+
+        /* Sliders */
+        #speedSlider,
         #spawnSlider {
             width: 100%;
             height: 8px;
             -webkit-appearance: none;
             appearance: none;
-            background: linear-gradient(90deg, #3b82f6, #8b5cf6, #ec4899);
             border-radius: 4px;
             outline: none;
             cursor: pointer;
         }
+        #speedSlider {
+            background: linear-gradient(90deg, #22c55e, #fbbf24, #ef4444);
+        }
+        #spawnSlider {
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6, #ec4899);
+        }
+        #speedSlider::-webkit-slider-thumb,
         #spawnSlider::-webkit-slider-thumb {
             -webkit-appearance: none;
             appearance: none;
@@ -683,6 +570,7 @@
             cursor: pointer;
             box-shadow: 0 2px 6px rgba(0,0,0,0.3);
         }
+        #speedSlider::-moz-range-thumb,
         #spawnSlider::-moz-range-thumb {
             width: 20px;
             height: 20px;
@@ -692,18 +580,11 @@
             border: none;
             box-shadow: 0 2px 6px rgba(0,0,0,0.3);
         }
+
+
     </style>
 </head>
 <body>
-    <!-- Password Protection Overlay -->
-    <div id="passwordOverlay">
-        <h1>🔒 KOALA HUNTING 🔒</h1>
-        <p>このゲームにアクセスするにはパスワードが必要です</p>
-        <input type="password" id="passwordInput" placeholder="パスワードを入力" onkeypress="if(event.key==='Enter')checkPassword()">
-        <button id="passwordSubmit" onclick="checkPassword()">ENTER</button>
-        <div id="passwordError">パスワードが違います</div>
-    </div>
-
     <div id="gameContainer">
         <div id="office">
             <!-- Ceiling with lights -->
@@ -743,22 +624,6 @@
                 <div id="bombMessage">DoR left</div>
             </div>
 
-            <!-- Control Panels -->
-            <div id="controlPanels">
-                <!-- Speed Control -->
-                <div id="speedControl">
-                    <label>KOALA SPEED (Difficulty)</label>
-                    <input type="range" id="speedSlider" min="1" max="10" value="5" oninput="updateSpeed(this.value)">
-                    <div class="speed-label" id="speedLabel">Normal</div>
-                </div>
-
-                <!-- Spawn Rate Control -->
-                <div id="spawnControl">
-                    <label>KOALA SPAWN RATE</label>
-                    <input type="range" id="spawnSlider" min="1" max="10" value="5" oninput="updateSpawnRate(this.value)">
-                    <div class="spawn-label" id="spawnLabel">Normal</div>
-                </div>
-            </div>
 
             <!-- UI -->
             <div id="ui">
@@ -792,6 +657,21 @@
                     <li>⏱️ 60 seconds - Hunt wisely!</li>
                 </ul>
             </div>
+
+            <!-- Game Settings -->
+            <div class="settings-container">
+                <div class="setting-item">
+                    <label>KOALA SPEED (Difficulty)</label>
+                    <input type="range" id="speedSlider" min="1" max="10" value="5" oninput="updateSpeed(this.value)">
+                    <div class="speed-label" id="speedLabel">Normal</div>
+                </div>
+                <div class="setting-item">
+                    <label>KOALA SPAWN RATE</label>
+                    <input type="range" id="spawnSlider" min="1" max="10" value="5" oninput="updateSpawnRate(this.value)">
+                    <div class="spawn-label" id="spawnLabel">Normal</div>
+                </div>
+            </div>
+
             <p><em>"Your timesheet looks suspicious..."</em> - PM</p>
             <button onclick="startGame()">START HUNTING</button>
         </div>
@@ -807,33 +687,6 @@
     </div>
 
     <script>
-        // Password Protection
-        const GAME_PASSWORD = 'koala123';
-
-        function checkPassword() {
-            const input = document.getElementById('passwordInput');
-            const error = document.getElementById('passwordError');
-
-            if (input.value === GAME_PASSWORD) {
-                document.getElementById('passwordOverlay').classList.add('hidden');
-                sessionStorage.setItem('koalaGameAuth', 'true');
-            } else {
-                error.style.opacity = '1';
-                input.value = '';
-                input.focus();
-                setTimeout(() => {
-                    error.style.opacity = '0';
-                }, 2000);
-            }
-        }
-
-        // Check if already authenticated in this session
-        if (sessionStorage.getItem('koalaGameAuth') === 'true') {
-            document.addEventListener('DOMContentLoaded', () => {
-                document.getElementById('passwordOverlay').classList.add('hidden');
-            });
-        }
-
         // Game state
         let score = 0;
         let koalasHunted = 0;
@@ -1064,7 +917,7 @@
             const isSleeping = stateData.status === "Napping";
 
             return `
-                <svg viewBox="0 0 100 100" width="82" height="82">
+                <svg viewBox="0 0 100 100" width="41" height="41">
                     <ellipse cx="20" cy="25" rx="15" ry="15" fill="#6b7280"/>
                     <ellipse cx="20" cy="25" rx="9" ry="9" fill="#fca5a5"/>
                     <ellipse cx="80" cy="25" rx="15" ry="15" fill="#6b7280"/>
@@ -1171,8 +1024,8 @@
             koalaDiv.className = 'koala';
             koalaDiv.id = `koala-${koalaId}`;
 
-            const startX = Math.random() * (areaRect.width - 70);
-            const startY = Math.random() * (areaRect.height - 70);
+            const startX = Math.random() * (areaRect.width - 50);
+            const startY = Math.random() * (areaRect.height - 50);
 
             koalaDiv.style.left = startX + 'px';
             koalaDiv.style.top = startY + 'px';
@@ -1183,7 +1036,7 @@
             koalaDiv.innerHTML = `
                 <div class="koala-status" style="background: ${stateData.color}">${dialogue}</div>
                 ${useKoalaImage ?
-                    `<img src="koala.jpg" alt="Koala" style="width: 82px; height: 82px; object-fit: contain;">` :
+                    `<img src="koala.jpg" alt="Koala" style="width: 41px; height: 41px; object-fit: contain;">` :
                     createKoalaSVG(state)}
             `;
 
@@ -1264,8 +1117,8 @@
 
             const deskArea = document.getElementById('deskArea');
             const areaRect = deskArea.getBoundingClientRect();
-            const maxX = areaRect.width - 90;
-            const maxY = areaRect.height - 90;
+            const maxX = areaRect.width - 50;
+            const maxY = areaRect.height - 50;
 
             // Apply both local and global speed multipliers
             const effectiveVx = koala.vx * koala.speedMultiplier * speedMultiplierGlobal;
@@ -1553,10 +1406,10 @@
             // Animate email from PM to click point
             animateEmailToKoala(event.clientX, event.clientY);
 
-            // Show miss popup
+            // Show miss popup with poop emoji
             const popup = document.createElement('div');
             popup.className = 'miss-popup';
-            popup.textContent = 'miss!';
+            popup.textContent = '💩 miss!';
             popup.style.left = event.clientX + 'px';
             popup.style.top = (event.clientY - 20) + 'px';
             document.body.appendChild(popup);
